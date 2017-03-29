@@ -31,29 +31,65 @@ public class CorsoDAO {
 			while (rs.next()) {
 
 				// Crea un nuovo JAVA Bean Corso
+				Corso c = new Corso(rs.getString("codins"), 
+						            rs.getInt("crediti"), 
+						            rs.getString("nome"), 
+						            rs.getInt("pd"));
 				// Aggiungi il nuovo Corso alla lista
+				corsi.add(c);
 			}
 
+			conn.close();
 			return corsi;
 
 		} catch (SQLException e) {
 			// e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 		}
+		
 	}
 
 	/*
 	 * Dato un codice insegnamento, ottengo il corso
 	 */
 	public void getCorso(Corso corso) {
-		// TODO
+	
 	}
 
 	/*
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
 	public void getStudentiIscrittiAlCorso(Corso corso) {
-		// TODO
+
+		final String sql = "SELECT studente.matricola, studente.cognome, studente.nome, studente.CDS "+
+		"FROM studente, iscrizione "+
+        "WHERE studente.matricola=iscrizione.matricola && iscrizione.codins=? ";
+
+		List<Studente> listaStudenti = new LinkedList<Studente>();
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			st.setString(1, corso.getCodins());
+			ResultSet rs = st.executeQuery();
+
+			
+			while (rs.next()) {
+				Studente s = new Studente(rs.getInt("matricola"), 
+						                  rs.getString("nome"),
+						                  rs.getString("cognome"),
+						                  rs.getString("cds"));
+				listaStudenti.add(s);
+			}
+			corso.setListaStudenti(listaStudenti);
+
+			conn.close();
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
 	}
 
 	/*
