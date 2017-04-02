@@ -25,7 +25,7 @@
             <HBox alignment="CENTER_LEFT" spacing="5.0">
                <children>
                   <Label text="Corso" />
-                  <ComboBox fx:id="comboCorso" prefWidth="150.0" promptText="Corsi" />
+                  <ComboBox fx:id="comboCorso" promptText="Corsi" />
                </children>
             </HBox>
             <HBox>

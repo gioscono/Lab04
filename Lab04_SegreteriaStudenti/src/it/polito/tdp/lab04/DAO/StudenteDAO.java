@@ -73,5 +73,37 @@ public class StudenteDAO {
 		}
 		
 	}
+	
+	public boolean cercaStudenteNelCorso(int matricola, String codCorso){
+		
+		final String sql = "SELECT * "+
+                           "FROM iscrizione "+
+                           "WHERE matricola=? && codins=?";
+		boolean ris = false;
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			
+			st.setInt(1, matricola);
+			st.setString(2, codCorso);
+			
+			ResultSet rs = st.executeQuery();
+			
+			if(rs.next())
+				ris = true;
+			else
+				ris = false;
+			
+			conn.close();
+			return ris;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			throw new RuntimeException("Errore Db");
+		}
+		
+		
+	}
 
 }

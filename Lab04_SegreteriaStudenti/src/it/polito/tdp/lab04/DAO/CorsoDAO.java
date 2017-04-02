@@ -97,7 +97,29 @@ public class CorsoDAO {
 	 * iscrivi lo studente al corso.
 	 */
 	public boolean inscriviStudenteACorso(Studente studente, Corso corso) {
-		// TODO
-		return false;
+		
+		final String sql = "INSERT INTO `iscritticorsi`.`iscrizione` (`matricola`, `codins`) VALUES (?, ?);";
+		boolean ris = false;
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+
+			st.setInt(1, studente.getMatricola());
+			st.setString(2, corso.getCodins());
+
+			int res = st.executeUpdate();
+			
+			if(res == 1){
+				ris = true;
+			}
+			
+			conn.close();
+			return ris;
+
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
+		}
 	}
+
 }

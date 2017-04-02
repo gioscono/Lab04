@@ -70,16 +70,23 @@ public class SegreteriaStudentiController {
     @FXML
     void doCercaCorsi(ActionEvent event) {
 
-    	int matricola = Integer.parseInt(txtMatricola.getText());
-    	Studente s = model.completaStudente(matricola);
-    	
-    	if(s==null){
-    		txtResult.appendText("ERRORE!! Matricola inserita non valida!");
+    	if(!txtMatricola.getText().equals("")){
+	    	int matricola = Integer.parseInt(txtMatricola.getText());
+	    	Studente s = model.completaStudente(matricola);
+	    	
+	    	
+	    	if(s==null){
+	    		txtResult.appendText("ERRORE!! Matricola inserita non valida!");
+	    		return;
+	    	}
+	    	else{
+	    		LinkedList<Corso> corsi = (LinkedList<Corso>) model.corsiStudente(s);
+	    		for(Corso c : corsi)
+	    			txtResult.appendText(String.format("%.10s %.10s %-50s %-20s\n", c.getCodins(), c.getCrediti(), c.getNome(), c.getPd()));
+	    	}
     	}
     	else{
-    		LinkedList<Corso> corsi = (LinkedList<Corso>) model.corsiStudente(s);
-    		for(Corso c : corsi)
-    			txtResult.appendText(String.format("%.10s %.10s %-50s %-20s\n", c.getCodins(), c.getCrediti(), c.getNome(), c.getPd()));
+    		txtResult.appendText("Devi inserire una matricola!\n");
     	}
     }
 
@@ -88,7 +95,7 @@ public class SegreteriaStudentiController {
 
     	String result = comboCorso.getValue();
     	if(result == null || result.equals("Tutti")){
-    		txtResult.setText("ERRORE!! Devi selezionare un corso!");
+    		txtResult.setText("ERRORE!! Devi selezionare un corso!\n");
     		return;
     	}else{
     		LinkedList<Studente> studenti = (LinkedList<Studente>) model.iscrittiCorso(result);
@@ -103,19 +110,92 @@ public class SegreteriaStudentiController {
     @FXML
     void doCercaNome(MouseEvent event) {
 
-    	int matricola = Integer.parseInt(txtMatricola.getText());
+    	if(txtMatricola.getText().equals("")){
+    		txtResult.appendText("Inserire matricola da completare!!\n");
+    		return;
+    	}
+    	int matricola;
+    	try{
+    		matricola = Integer.parseInt(txtMatricola.getText());
+        	}catch(NumberFormatException e){
+        		txtResult.setText("La matricola e' composta da soli numeri!!\n");
+        		return;
+        	}
+    	
     	Studente s = model.completaStudente(matricola);
-    	txtNome.setText(s.getNome());
-    	txtCognome.setText(s.getCognome());
+    	if(s==null){
+    		txtResult.appendText("Matricola inserita non valida!\n");
+    		return;
+    	}
+    	
+    	if(comboCorso.getValue()==null){
+		    txtNome.setText(s.getNome());
+		   	txtCognome.setText(s.getCognome());
+    	}
+    	else{
+    		String corso = comboCorso.getValue();
+	    	txtNome.setText(s.getNome());
+	    	txtCognome.setText(s.getCognome());
+	    	boolean ris = model.cercaStudenteNelCorso(corso, s);
+	    	
+	    	if(ris==true)
+	    		txtResult.appendText("Studente gia iscritto a questo corso.\n");
+	    	else
+	    		txtResult.appendText("Studente non iscritto a questo corso.\n");
+	    	
+    	}
     }
 
     @FXML
     void doIscrivi(ActionEvent event) {
 
+    	if(txtMatricola.getText().equals("")){
+    		txtResult.appendText("Inserire matricola!!\n");
+    		return;
+    	}
+    	int matricola;
+    	try{
+    		matricola = Integer.parseInt(txtMatricola.getText());
+        	}catch(NumberFormatException e){
+        		txtResult.setText("La matricola e' composta da soli numeri!!\n");
+        		return;
+        	}
+    	
+    	Studente s = model.completaStudente(matricola);
+    	
+    	if(comboCorso.getValue()==null || comboCorso.getValue().equals("Tutti")){
+    		txtResult.appendText("Selezionare un corso!\n");
+    		return;
+    	}
+    	if(s==null){
+    		txtResult.appendText("Matricola inserita non valida!!");
+    		return;
+    	}
+    	
+    	if(!model.cercaStudenteNelCorso(comboCorso.getValue(), s)){
+    		boolean ris = model.iscriviStudenteAlCorso(comboCorso.getValue(), s);
+    		
+    		if(ris == true){
+    			txtResult.appendText("Studente "+matricola+" iscritto correttamente al corso "+comboCorso.getValue()+"\n");
+    		}
+    	}
+    	else{
+    		txtResult.appendText("Studente "+matricola+" gia iscritto al corso "+comboCorso.getValue()+"\n");
+    	}
+    	
+    	
+    	
     }
+    	
+    
 
     @FXML
     void doReset(ActionEvent event) {
+    	
+    	txtMatricola.clear();
+    	txtNome.clear();
+    	txtCognome.clear();
+    	txtResult.clear();
 
     }
 

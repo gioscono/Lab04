@@ -51,4 +51,33 @@ public class Model {
 		
 		return s.getListaCorsi();
 	}
+
+
+	public boolean cercaStudenteNelCorso(String corso, Studente s) {
+		
+	Corso corsoSelezionato = null;
+	
+	for(Corso c : corsi){
+		if(c.getNome().equals(corso))
+			corsoSelezionato = c;
+	}
+	StudenteDAO std = new StudenteDAO();
+	
+	return std.cercaStudenteNelCorso(s.getMatricola(), corsoSelezionato.getCodins());
+	
+	}
+
+
+	public boolean iscriviStudenteAlCorso(String corso, Studente s) {
+		Corso corsoSelezionato = null;
+		
+		for(Corso c : corsi){
+			if(c.getNome().equals(corso))
+				corsoSelezionato = c;
+		}
+		
+		CorsoDAO cd = new CorsoDAO();
+		return cd.inscriviStudenteACorso(s, corsoSelezionato);
+	}
+	
 }
